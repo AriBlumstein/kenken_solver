@@ -2,6 +2,7 @@
 Module for KenKen board representation.
 """
 
+
 from dataclasses import dataclass
 
 from collections import namedtuple
@@ -80,7 +81,11 @@ class Board:
         return [Cell(r, c) for r in range(self.__size) for c in range(self.__size) if self.__grid[r][c] == "*"]
     
     def is_solved(self):
-        return all(self.__grid[r][c] != "*" for r in range(self.__size) for c in range(self.__size))
+        """ Check if the board is completely solved."""
+        
+        return all(cell != "*" for row in self.__grid for cell in row) and \
+                all(sum(row) == sum(range(1, self.__size + 1)) for row in self.__grid) and \
+                all(sum(self.__grid[r][c] for r in range(self.__size)) == sum(range(1, self.__size + 1)) for c in range(self.__size))
 
 
 
