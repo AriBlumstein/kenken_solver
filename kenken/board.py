@@ -1,9 +1,13 @@
 """
 Module for KenKen board representation.
 """
-from collections import namedtuple
-cell = namedtuple("cell", ["row", "col"])
 
+from dataclasses import dataclass
+
+from collections import namedtuple
+Cell = namedtuple("cell", ["row", "col"])
+
+dataclass(frozen=True)
 class Rule:
     """
     Class representing a rule in KenKen.
@@ -44,15 +48,15 @@ class Board:
         self.__constraints_set = True
 
 
-    def get_constraint(self, cll):
+    def get_constraint(self, cell):
         assert self.__constraints_set
-        assert isinstance(cll, cell)
-        assert 0 <= cll.row < self.__size
-        assert 0 <= cll.col < self.__size
-        return self.__row_constrainsts[cll.row] & self.__col_constraints[cll.col]
+        assert isinstance(cell, Cell)
+        assert 0 <= cell.row < self.__size
+        assert 0 <= cell.col < self.__size
+        return self.__row_constrainsts[cell.row] & self.__col_constraints[cell.col]
     
     def set_cell(self, cll, val):
-        assert isinstance(cll, cell)
+        assert isinstance(cll, Cell)
         assert 0 <= cll.row < self.__size
         assert 0 <= cll.col < self.__size
         assert 1 <= val <= self.__size
@@ -62,18 +66,18 @@ class Board:
         self.__col_constraints[cll.col].discard(val)
         self.__grid[cll.row][cll.col] = val
 
-    def unset_cell(self, cll):
-        assert isinstance(cll, cell)
-        assert 0 <= cll.row < self.__size
-        assert 0 <= cll.col < self.__size
-        val = self.__grid[cll.row][cll.col]
+    def unset_cell(self, cell):
+        assert isinstance(cell, Cell)
+        assert 0 <= cell.row < self.__size
+        assert 0 <= cell.col < self.__size
+        val = self.__grid[cell.row][cell.col]
         assert val != "*"
-        self.__row_constrainsts[cll.row].add(val)
-        self.__col_constraints[cll.col].add(val)
-        self.__grid[cll.row][cll.col] = "*"
+        self.__row_constrainsts[cell.row].add(val)
+        self.__col_constraints[cell.col].add(val)
+        self.__grid[cell.row][cell.col] = "*"
     
     def get_unsolved_cells(self):
-        return [cell(r, c) for r in range(self.__size) for c in range(self.__size) if self.__grid[r][c] == "*"]
+        return [Cell(r, c) for r in range(self.__size) for c in range(self.__size) if self.__grid[r][c] == "*"]
     
     def is_solved(self):
         return all(self.__grid[r][c] != "*" for r in range(self.__size) for c in range(self.__size))
